@@ -8,7 +8,7 @@ let youtubeLiveChatId: string | undefined;
 
 const getLiveChatId = async () => {
   if (!youtubeClient) {
-    console.error("YouTube n'est pas initialisé");
+    console.error("YouTube client is not initialized.");
     return;
   }
   try {
@@ -18,7 +18,7 @@ const getLiveChatId = async () => {
     });
     const liveId = liveBroadcastsResponse.data.items?.[0]?.id;
     if (!liveId) {
-      console.log("Pas de live actif trouvé.");
+      console.log("No active live found.");
       return;
     }
 
@@ -29,13 +29,13 @@ const getLiveChatId = async () => {
     const liveChatId =
       videosResponse.data.items?.[0]?.liveStreamingDetails?.activeLiveChatId;
     if (!liveChatId) {
-      console.log("Pas de chat actif trouvé pour cette vidéo.");
+      console.log("No active chat found for this video.");
       return;
     }
 
     return liveChatId;
   } catch (error) {
-    console.error("Erreur lors de la récupération de l'ID du chat:", error);
+    console.error("Error while retrieving YouTube chat ID:", error);
   }
 };
 
@@ -50,15 +50,15 @@ export const initYouTube = async () => {
 
     youtubeLiveChatId = await getLiveChatId();
 
-    console.log("Connecté à YouTube");
+    console.log("Connected to YouTube.");
   } catch (error) {
-    console.error("Erreur lors de l'initialisation de YouTube:", error);
+    console.error("Error while connecting to YouTube:", error);
   }
 };
 
 export const sendToYouTube = async (message: string) => {
   if (!youtubeClient || !youtubeLiveChatId) {
-    console.error("YouTube n'est pas initialisé");
+    console.error("YouTube client is not initialized.");
     return;
   }
 
@@ -76,7 +76,7 @@ export const sendToYouTube = async (message: string) => {
       },
     });
   } catch (error) {
-    console.error("Erreur lors de l'envoi vers YouTube:", error);
+    console.error("Error while sending a chat message to YouTube:", error);
   }
 };
 
@@ -84,7 +84,7 @@ let nextPageToken: string | null = null;
 
 const getYouTubeMessages = async (): Promise<string[] | undefined> => {
   if (!youtubeClient || !youtubeLiveChatId) {
-    console.error("YouTube n'est pas initialisé");
+    console.error("YouTube client is not initialized.");
     return;
   }
 
@@ -114,16 +114,13 @@ const getYouTubeMessages = async (): Promise<string[] | undefined> => {
       })
       .filter((message): message is string => message !== null);
   } catch (error) {
-    console.error(
-      "Erreur lors de la récupération des messages YouTube:",
-      error
-    );
+    console.error("Error while retrieving chat messages from YouTube:", error);
   }
 };
 
 export const listenToYouTube = async (callback: (message: string) => void) => {
   if (!youtubeClient) {
-    console.error("YouTube n'est pas initialisé");
+    console.error("YouTube client is not initialized.");
     return;
   }
   const interval = setInterval(async () => {

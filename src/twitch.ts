@@ -21,15 +21,15 @@ export const initTwitch = async () => {
   try {
     await twitchClient.connect();
 
-    console.log("Connecté à Twitch");
+    console.log("Connected to Twitch.");
   } catch (error) {
-    console.error("Erreur lors de la connexion à Twitch:", error);
+    console.error("Error while connecting to Twitch:", error);
   }
 };
 
 export const sendToTwitch = async (message: string) => {
   if (!twitchClient) {
-    console.error("Twitch n'est pas initialisé");
+    console.error("Twitch client is not initialized.");
     return;
   }
 
@@ -38,12 +38,12 @@ export const sendToTwitch = async (message: string) => {
 
 export const listenToTwitch = async (callback: (message: string) => void) => {
   if (!twitchClient) {
-    console.error("Twitch n'est pas initialisé");
+    console.error("Twitch client is not initialized.");
     return;
   }
 
   twitchClient.on("message", (_channel, tags, message, self) => {
-    if (self) return; // Ignorez les messages du bot lui-même
+    if (self) return; // ignore bot's messages
 
     const formattedMessage = `${BOT_TAG.twitch} ${tags["display-name"]}: ${message}`;
     console.log(formattedMessage);
