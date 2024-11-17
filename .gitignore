@@ -4,9 +4,6 @@
 # Node
 node_modules
 
-# Yarn
-.yarn/*
-
 # Security
 src/auth/client_secret.json
 src/auth/token.json
