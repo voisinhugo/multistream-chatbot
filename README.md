@@ -17,7 +17,7 @@ yarn install
 
 #### Twitch
 
-Create a file `src/auth/tokenStorage.ts` with the following content:
+Create a file `src/auth/twitchSecrets.ts` with the following content:
 
 ```ts
 export const twitchUsername = "#####";
