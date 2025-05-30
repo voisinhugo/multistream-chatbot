@@ -6,5 +6,4 @@ node_modules
 
 # Security
 src/auth/client_secret.json
-src/auth/token.json
 src/auth/twitchSecrets.ts

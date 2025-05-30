@@ -2,7 +2,6 @@ import express from "express";
 import { google } from "googleapis";
 import open from "open";
 import GoogleCredentials from "./client_secret.json";
-import { loadToken, saveToken } from "./tokenStorage";
 import { Credentials, OAuth2Client } from "./types";
 
 const SCOPES = [
@@ -19,14 +18,9 @@ export const initGoogleAuthClient = async () => {
     redirect_uris[0]
   );
 
-  const token = loadToken();
-  if (token) {
-    oAuth2Client.setCredentials(token);
-  } else {
-    const newToken = await getAccessToken(oAuth2Client);
-    oAuth2Client.setCredentials(newToken);
-    saveToken(newToken);
-  }
+  const newToken = await getAccessToken(oAuth2Client);
+  oAuth2Client.setCredentials(newToken);
+
   return oAuth2Client;
 };
 
