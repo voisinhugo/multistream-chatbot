@@ -15,3 +15,4 @@ node_modules
 # Security
 src/auth/client_secret.json
 src/auth/twitchSecrets.ts
+src/artists/googleApiKey.txt

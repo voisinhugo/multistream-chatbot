@@ -5,6 +5,8 @@ import {
   twitchUsername,
 } from "./auth/twitchSecrets";
 import { BOT_TAG } from "./botTags";
+import { sendMessageIfArtistCommand } from "./sendMessageIfArtistCommand";
+import { isMessageTransfer } from "./utils";
 
 let twitchClient: tmi.Client | undefined;
 
@@ -43,10 +45,12 @@ export const listenToTwitch = async (callback: (message: string) => void) => {
   }
 
   twitchClient.on("message", (_channel, tags, message, self) => {
-    if (self) return; // ignore bot's messages
+    if (isMessageTransfer(message)) return;
 
     const formattedMessage = `${BOT_TAG.twitch} ${tags["display-name"]}: ${message}`;
     console.log(formattedMessage);
     callback(formattedMessage);
+
+    sendMessageIfArtistCommand(message, sendToTwitch);
   });
 };

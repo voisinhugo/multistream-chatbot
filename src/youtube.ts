@@ -1,7 +1,8 @@
 import { google } from "googleapis";
 import { initGoogleAuthClient } from "./auth/initGoogleAuthClient";
 import { BOT_TAG } from "./botTags";
-import { isMessageFromBot } from "./utils";
+import { isMessageTransfer } from "./utils";
+import { sendMessageIfArtistCommand } from "./sendMessageIfArtistCommand";
 
 let youtubeClient: ReturnType<typeof google.youtube> | undefined;
 let youtubeLiveChatId: string | undefined;
@@ -82,7 +83,11 @@ export const sendToYouTube = async (message: string) => {
 
 let nextPageToken: string | null = null;
 
-const getYouTubeMessages = async (): Promise<string[] | undefined> => {
+type MessageItem = {
+  author: string;
+  message: string;
+};
+const getYouTubeMessages = async (): Promise<MessageItem[] | undefined> => {
   if (!youtubeClient || !youtubeLiveChatId) {
     console.error("YouTube client is not initialized.");
     return;
@@ -104,15 +109,13 @@ const getYouTubeMessages = async (): Promise<string[] | undefined> => {
       ?.map((item) => {
         const message = item.snippet?.displayMessage;
         const author = item.authorDetails?.displayName;
-        if (!message || !author || isMessageFromBot(message)) {
+        if (!message || !author || isMessageTransfer(message)) {
           return null;
         }
 
-        const formattedMessage = `${BOT_TAG.youtube} ${author}: ${message}`;
-        console.log(formattedMessage);
-        return formattedMessage;
+        return { author, message };
       })
-      .filter((message): message is string => message !== null);
+      .filter((message): message is MessageItem => message !== null);
   } catch (error) {
     console.error("Error while retrieving chat messages from YouTube:", error);
   }
@@ -126,8 +129,11 @@ export const listenToYouTube = async (callback: (message: string) => void) => {
   const interval = setInterval(async () => {
     const messages = await getYouTubeMessages();
     if (messages) {
-      messages.forEach((message) => {
-        callback(message);
+      messages.forEach(({ author, message }) => {
+        const formattedMessage = `${BOT_TAG.youtube} ${author}: ${message}`;
+        callback(formattedMessage);
+
+        sendMessageIfArtistCommand(message, sendToYouTube);
       });
     }
   }, 5000);
