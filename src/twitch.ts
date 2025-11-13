@@ -38,7 +38,9 @@ export const sendToTwitch = async (message: string) => {
   await twitchClient.say(twitchChannel, message);
 };
 
-export const listenToTwitch = async (callback: (message: string) => void) => {
+export const listenToTwitch = async (
+  sendToOtherChats: (message: string) => void
+) => {
   if (!twitchClient) {
     console.error("Twitch client is not initialized.");
     return;
@@ -49,7 +51,7 @@ export const listenToTwitch = async (callback: (message: string) => void) => {
 
     const formattedMessage = `${BOT_TAG.twitch} ${tags["display-name"]}: ${message}`;
     console.log(formattedMessage);
-    callback(formattedMessage);
+    sendToOtherChats(formattedMessage);
 
     sendMessageIfArtistCommand(message, sendToTwitch);
   });

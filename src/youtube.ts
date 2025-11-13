@@ -121,7 +121,9 @@ const getYouTubeMessages = async (): Promise<MessageItem[] | undefined> => {
   }
 };
 
-export const listenToYouTube = async (callback: (message: string) => void) => {
+export const listenToYouTube = async (
+  sendToOtherChats: (message: string) => void
+) => {
   if (!youtubeClient) {
     console.error("YouTube client is not initialized.");
     return;
@@ -131,7 +133,7 @@ export const listenToYouTube = async (callback: (message: string) => void) => {
     if (messages) {
       messages.forEach(({ author, message }) => {
         const formattedMessage = `${BOT_TAG.youtube} ${author}: ${message}`;
-        callback(formattedMessage);
+        sendToOtherChats(formattedMessage);
 
         sendMessageIfArtistCommand(message, sendToYouTube);
       });
