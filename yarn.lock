@@ -512,6 +512,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"chalk@npm:^5.6.2":
+  version: 5.6.2
+  resolution: "chalk@npm:5.6.2"
+  checksum: 10c0/99a4b0f0e7991796b1e7e3f52dceb9137cae2a9dfc8fc0784a550dc4c558e15ab32ed70b14b21b52beb2679b4892b41a0aa44249bcb996f01e125d58477c6976
+  languageName: node
+  linkType: hard
+
 "chownr@npm:^2.0.0":
   version: 2.0.0
   resolution: "chownr@npm:2.0.0"
@@ -1565,6 +1572,7 @@ __metadata:
     "@types/express": "npm:^4"
     "@types/node": "npm:v20.10.0"
     "@types/tmi.js": "npm:^1.8.6"
+    chalk: "npm:^5.6.2"
     express: "npm:^4.21.1"
     googleapis: "npm:^165.0.0"
     open: "npm:^10.1.0"

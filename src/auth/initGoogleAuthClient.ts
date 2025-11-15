@@ -3,6 +3,7 @@ import { google } from "googleapis";
 import open from "open";
 import GoogleCredentials from "./client_secret.json";
 import { Credentials, OAuth2Client } from "./types";
+import { logger } from "../logger";
 
 const SCOPES = [
   "https://www.googleapis.com/auth/youtube",
@@ -31,7 +32,7 @@ const getAccessToken = async (
     access_type: "offline",
     scope: SCOPES,
   });
-  console.log("Authorize this app by visiting this URL:", authUrl);
+  logger.info(`Authorize this app by visiting this URL: ${authUrl}`);
   open(authUrl);
 
   return new Promise((resolve, reject) => {

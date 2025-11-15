@@ -7,6 +7,7 @@ import {
 import { BOT_TAG } from "./botTags";
 import { sendMessageIfArtistCommand } from "./sendMessageIfArtistCommand";
 import { isMessageTransfer } from "./utils";
+import { logger } from "./logger";
 
 let twitchClient: tmi.Client | undefined;
 
@@ -23,18 +24,19 @@ export const initTwitch = async () => {
   try {
     await twitchClient.connect();
 
-    console.log("Connected to Twitch.");
+    logger.info("Connected to Twitch.");
   } catch (error) {
-    console.error("Error while connecting to Twitch:", error);
+    logger.error(`Error while connecting to Twitch: ${error}`);
   }
 };
 
 export const sendToTwitch = async (message: string) => {
   if (!twitchClient) {
-    console.error("Twitch client is not initialized.");
+    logger.error("Twitch client is not initialized.");
     return;
   }
 
+  logger.info(`Sending to Twitch chat: ${message}`);
   await twitchClient.say(twitchChannel, message);
 };
 
@@ -42,7 +44,7 @@ export const listenToTwitch = async (
   sendToOtherChats: (message: string) => void
 ) => {
   if (!twitchClient) {
-    console.error("Twitch client is not initialized.");
+    logger.error("Twitch client is not initialized.");
     return;
   }
 
@@ -50,7 +52,6 @@ export const listenToTwitch = async (
     if (isMessageTransfer(message)) return;
 
     const formattedMessage = `${BOT_TAG.twitch} ${tags["display-name"]}: ${message}`;
-    console.log(formattedMessage);
     sendToOtherChats(formattedMessage);
 
     sendMessageIfArtistCommand(message, sendToTwitch);

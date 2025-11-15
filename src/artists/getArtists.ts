@@ -1,5 +1,6 @@
 import { google } from "googleapis";
 import fs from "fs";
+import { logger } from "../logger";
 
 type EditionData = {
   name: string | undefined;
@@ -24,7 +25,7 @@ export const fetchEditionData = async (): Promise<EditionData | undefined> => {
   const rows: string[][] | undefined | null = res.data.values;
 
   if (!rows || rows.length === 0) {
-    console.error(
+    logger.error(
       "No data found. Check the spreadsheet, range, or authentification to Google."
     );
     return;

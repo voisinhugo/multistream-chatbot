@@ -1,4 +1,5 @@
 import { fetchArtists } from "./artists/getArtists";
+import { logger } from "./logger";
 
 export const sendMessageIfArtistCommand = async (
   message: string,
@@ -13,6 +14,6 @@ export const sendMessageIfArtistCommand = async (
   if (!artist) return;
 
   const artistMessage = `Retrouvez ${artist.name} sur ${artist.instagram}`;
-  console.log(artistMessage);
+  logger.info(artistMessage);
   callbacks.forEach((callback) => callback(artistMessage));
 };
