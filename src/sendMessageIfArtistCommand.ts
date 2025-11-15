@@ -3,7 +3,7 @@ import { logger } from "./logger";
 
 export const sendMessageIfArtistCommand = async (
   message: string,
-  ...callbacks: ((message: string) => void)[]
+  sendMessage: (message: string) => void
 ) => {
   const artistMatch = message.trim().match(/^!artiste(\d+)$/i);
   if (!artistMatch) return;
@@ -15,5 +15,5 @@ export const sendMessageIfArtistCommand = async (
 
   const artistMessage = `Retrouvez ${artist.name} sur ${artist.instagram}`;
   logger.info(artistMessage);
-  callbacks.forEach((callback) => callback(artistMessage));
+  sendMessage(artistMessage);
 };
