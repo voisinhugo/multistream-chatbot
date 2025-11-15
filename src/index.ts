@@ -1,5 +1,7 @@
-import { initTwitch, listenToTwitch, sendToTwitch } from "./twitch";
-import { initYouTube, listenToYouTube, sendToYouTube } from "./youtube";
+import { initTwitch, listenToTwitch, sendToTwitch } from "./twitch/twitch";
+import { listenToYouTube } from "./youtube/listenToYouTube";
+import { initYouTube } from "./youtube/initYouTube";
+import { sendToYouTube } from "./youtube/sendToYouTube";
 
 const main = async () => {
   await initTwitch();

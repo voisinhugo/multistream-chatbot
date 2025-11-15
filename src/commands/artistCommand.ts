@@ -1,5 +1,6 @@
-import { fetchArtists } from "./artists/getArtists";
-import { logger } from "./logger";
+import { fetchFiealdEdition } from "../api/fiealdEdition/fetchFiealdEdition";
+import { Artist } from "../api/fiealdEdition/types";
+import { logger } from "../logger";
 
 export const sendMessageIfArtistCommand = async (
   message: string,
@@ -16,4 +17,9 @@ export const sendMessageIfArtistCommand = async (
   const artistMessage = `Retrouvez ${artist.name} sur ${artist.instagram}`;
   logger.info(artistMessage);
   sendMessage(artistMessage);
+};
+
+const fetchArtists = async (): Promise<Artist[] | undefined> => {
+  const data = await fetchFiealdEdition();
+  return data?.artists;
 };

@@ -3,11 +3,11 @@ import {
   twitchChannel,
   twitchToken,
   twitchUsername,
-} from "./auth/twitchSecrets";
-import { BOT_TAG } from "./botTags";
-import { sendMessageIfArtistCommand } from "./sendMessageIfArtistCommand";
-import { isMessageTransfer } from "./utils";
-import { logger } from "./logger";
+} from "../auth/twitchSecrets";
+import { BOT_TAG } from "../bots/botTags";
+import { sendMessageIfArtistCommand } from "../commands/artistCommand";
+import { isMessageTransfer } from "../bots/isMessageTransfer";
+import { logger } from "../logger";
 
 let twitchClient: tmi.Client | undefined;
 

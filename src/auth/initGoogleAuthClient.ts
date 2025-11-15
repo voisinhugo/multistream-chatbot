@@ -2,8 +2,11 @@ import express from "express";
 import { google } from "googleapis";
 import open from "open";
 import GoogleCredentials from "./client_secret.json";
-import { Credentials, OAuth2Client } from "./types";
 import { logger } from "../logger";
+import type { OAuth2Client as GoogleOAuth2Client } from "google-auth-library";
+
+type OAuth2Client = GoogleOAuth2Client;
+type Credentials = Parameters<GoogleOAuth2Client["setCredentials"]>[0];
 
 const SCOPES = [
   "https://www.googleapis.com/auth/youtube",
