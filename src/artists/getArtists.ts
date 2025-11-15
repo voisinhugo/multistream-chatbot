@@ -71,5 +71,8 @@ export const getLiveName = async (): Promise<string | undefined> => {
 
 const getTodayFrenchDateString = (): string => {
   const today = new Date();
-  return `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+
+  const dateString = today.getDate().toString().padStart(2, "0");
+  const monthString = (today.getMonth() + 1).toString().padStart(2, "0");
+  return `${dateString}/${monthString}/${today.getFullYear()}`;
 };
