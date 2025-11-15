@@ -33,6 +33,12 @@ export const fetchEditionData = async (): Promise<EditionData | undefined> => {
 
   const todayString = getTodayFrenchDateString();
   const todaysRows = rows.filter((row) => row[0]?.includes(todayString));
+  if (todaysRows.length === 0) {
+    logger.error(
+      `No edition found for today. Please check the spreadsheet: https://docs.google.com/spreadsheets/d/${spreadsheetId}`
+    );
+    return;
+  }
 
   const editionNameRegex = new RegExp(`(\\d+e) \\(${todayString}\\)`);
   const editionName = todaysRows[0][0]?.match(editionNameRegex)?.[1];
