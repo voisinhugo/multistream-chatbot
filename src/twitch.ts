@@ -48,7 +48,7 @@ export const listenToTwitch = async (
     return;
   }
 
-  twitchClient.on("message", (_channel, tags, message, self) => {
+  twitchClient.on("message", (_channel, tags, message) => {
     if (isMessageTransfer(message)) return;
 
     const formattedMessage = `${BOT_TAG.twitch} ${tags["display-name"]}: ${message}`;
