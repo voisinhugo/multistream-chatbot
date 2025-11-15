@@ -3,9 +3,57 @@ import { initGoogleAuthClient } from "./auth/initGoogleAuthClient";
 import { BOT_TAG } from "./botTags";
 import { isMessageTransfer } from "./utils";
 import { sendMessageIfArtistCommand } from "./sendMessageIfArtistCommand";
+import { getLiveName } from "./artists/getArtists";
 
 let youtubeClient: ReturnType<typeof google.youtube> | undefined;
 let youtubeLiveChatId: string | undefined;
+
+const createLiveBroadcast = async (): Promise<string | undefined> => {
+  if (!youtubeClient) {
+    console.error("YouTube client is not initialized.");
+    return;
+  }
+
+  const existingStreams = await youtubeClient.liveStreams.list({
+    part: ["id"],
+    mine: true,
+  });
+  const streamId = existingStreams.data.items?.[0]?.id;
+
+  if (!streamId) {
+    console.error(
+      "No existing live stream found. Please create a stream key on YouTube Studio."
+    );
+    return;
+  }
+  const broadcastTitle = await getLiveName();
+  console.log(`YouTube live will be called: "${broadcastTitle}"`);
+
+  const liveBroadcastInsert = await youtubeClient.liveBroadcasts.insert({
+    part: ["snippet", "status", "contentDetails"],
+    requestBody: {
+      snippet: {
+        title: broadcastTitle,
+        scheduledStartTime: new Date().toISOString(),
+      },
+      status: { privacyStatus: "public" },
+      contentDetails: { enableAutoStart: true, latencyPreference: "low" },
+    },
+  });
+  const broadcastId = liveBroadcastInsert.data.id;
+  if (!broadcastId) {
+    console.error("Failed to create live broadcast (no broadcast ID).");
+    return;
+  }
+
+  await youtubeClient.liveBroadcasts.bind({
+    id: broadcastId,
+    part: ["id", "snippet", "status", "contentDetails"],
+    streamId: streamId,
+  });
+
+  return broadcastId;
+};
 
 const getLiveChatId = async () => {
   if (!youtubeClient) {
@@ -17,10 +65,19 @@ const getLiveChatId = async () => {
       broadcastStatus: "active",
       part: ["id"],
     });
-    const liveId = liveBroadcastsResponse.data.items?.[0]?.id;
+    let liveId = liveBroadcastsResponse.data.items?.[0]?.id;
     if (!liveId) {
-      console.log("No active live found.");
-      return;
+      console.log("No active live found. Attempting to create one…");
+      const newLiveId = await createLiveBroadcast();
+
+      if (!newLiveId) {
+        console.error("Failed to create a new live broadcast.");
+        return;
+      }
+      liveId = newLiveId;
+      console.log(
+        `Created new YouTube live broadcast: https://studio.youtube.com/video/${liveId}/livestreaming`
+      );
     }
 
     const videosResponse = await youtubeClient.videos.list({

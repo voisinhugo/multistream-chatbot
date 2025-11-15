@@ -1,6 +1,11 @@
 import { google } from "googleapis";
 import fs from "fs";
 
+type EditionData = {
+  name: string | undefined;
+  artists: Artist[];
+};
+
 type Artist = {
   name: string;
   instagram: string;
@@ -11,7 +16,7 @@ const sheets = google.sheets({
   auth: fs.readFileSync(`src/artists/googleApiKey.txt`, "utf8").trim(),
 });
 
-export const fetchArtists = async (): Promise<Artist[] | undefined> => {
+export const fetchEditionData = async (): Promise<EditionData | undefined> => {
   const spreadsheetId = "1ZyJAjyBQ08ZxQX90pU4DCbO7MP5ZnRmb6cvSYr2Jgvk";
   const range = "Coordonnées!A602:F"; // Column A: date, Column E: artist's name, Column F: artist's Instagram
 
@@ -28,12 +33,33 @@ export const fetchArtists = async (): Promise<Artist[] | undefined> => {
   const todayString = getTodayFrenchDateString();
   const todaysRows = rows.filter((row) => row[0]?.includes(todayString));
 
+  const editionNameRegex = new RegExp(`(\\d+e) \\(${todayString}\\)`);
+  const editionName = todaysRows[0][0]?.match(editionNameRegex)?.[1];
+
   const artists = todaysRows.map((row) => ({
     name: row[4],
     instagram: `https://www.instagram.com/${row[5]}`,
   }));
 
-  return artists;
+  return {
+    name: editionName,
+    artists,
+  };
+};
+
+export const fetchArtists = async (): Promise<Artist[] | undefined> => {
+  const data = await fetchEditionData();
+  return data?.artists;
+};
+
+export const getLiveName = async (): Promise<string | undefined> => {
+  const editionData = await fetchEditionData();
+
+  const prefix = editionData?.name ? `La ${editionData.name} ` : "L'";
+  const mainArtist = editionData?.artists[editionData.artists.length - 1];
+  const mainArtistString = mainArtist ? `avec ${mainArtist.name} ` : "";
+
+  return `${prefix}édition du FIEALD ${mainArtistString}! 🎭`;
 };
 
 const getTodayFrenchDateString = (): string => {
