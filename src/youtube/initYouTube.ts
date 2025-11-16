@@ -2,9 +2,10 @@ import { google } from "googleapis";
 import { initGoogleAuthClient } from "../auth/initGoogleAuthClient";
 import { logger } from "../logger";
 import { getLiveChatId } from "./getLiveChatId";
+import { YoutubeChatId, YoutubeClient } from "./types";
 
-let youtubeClient: ReturnType<typeof google.youtube> | undefined;
-let youtubeLiveChatId: string | undefined;
+export let youtubeClient: YoutubeClient | undefined;
+export let youtubeChatId: YoutubeChatId | undefined;
 
 export const initYouTube = async () => {
   try {
@@ -15,7 +16,7 @@ export const initYouTube = async () => {
       auth: OAuth2Client,
     });
 
-    youtubeLiveChatId = await getLiveChatId();
+    youtubeChatId = await getLiveChatId(youtubeClient);
 
     logger.info("Connected to YouTube.");
   } catch (error) {

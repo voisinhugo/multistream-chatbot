@@ -2,8 +2,8 @@ import { BOT_TAG } from "../bots/botTags";
 import { isMessageTransfer } from "../bots/isMessageTransfer";
 import { sendMessageIfArtistCommand } from "../commands/artistCommand";
 import { logger } from "../logger";
+import { youtubeChatId, youtubeClient } from "./initYouTube";
 import { sendToYouTube } from "./sendToYouTube";
-import { youtubeClient, youtubeLiveChatId } from "./youtubeBot";
 
 export const listenToYouTube = async (
   sendToOtherChats: (message: string) => void
@@ -33,15 +33,15 @@ type MessageItem = {
   message: string;
 };
 const getYouTubeMessages = async (): Promise<MessageItem[] | undefined> => {
-  if (!youtubeClient || !youtubeLiveChatId) {
-    logger.error("YouTube client is not initialized.");
+  if (!youtubeClient || !youtubeChatId) {
+    logger.error("Missing YouTube client or chat ID.");
     return;
   }
 
   try {
     const response = await youtubeClient.liveChatMessages.list(
       {
-        liveChatId: youtubeLiveChatId,
+        liveChatId: youtubeChatId,
         part: ["snippet", "authorDetails"],
         ...(nextPageToken ? { pageToken: nextPageToken } : {}),
       },

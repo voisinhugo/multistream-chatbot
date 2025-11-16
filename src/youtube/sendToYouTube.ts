@@ -1,9 +1,9 @@
 import { logger } from "../logger";
-import { youtubeClient, youtubeLiveChatId } from "./youtubeBot";
+import { youtubeChatId, youtubeClient } from "./initYouTube";
 
 export const sendToYouTube = async (message: string) => {
-  if (!youtubeClient || !youtubeLiveChatId) {
-    logger.error("YouTube client is not initialized.");
+  if (!youtubeClient || !youtubeChatId) {
+    logger.error("Missing YouTube client or chat ID.");
     return;
   }
 
@@ -14,7 +14,7 @@ export const sendToYouTube = async (message: string) => {
       requestBody: {
         snippet: {
           type: "textMessageEvent",
-          liveChatId: youtubeLiveChatId,
+          liveChatId: youtubeChatId,
           textMessageDetails: {
             messageText: message,
           },

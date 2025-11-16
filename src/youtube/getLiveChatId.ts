@@ -1,45 +1,58 @@
 import { logger } from "../logger";
 import { createLiveBroadcast } from "./createLiveBroadcast";
-import { youtubeClient } from "./youtubeBot";
+import { YoutubeClient } from "./types";
 
-export const getLiveChatId = async () => {
-  if (!youtubeClient) {
-    logger.error("YouTube client is not initialized.");
-    return;
-  }
+export const getLiveChatId = async (youtubeClient: YoutubeClient) => {
   try {
-    const liveBroadcastsResponse = await youtubeClient.liveBroadcasts.list({
-      broadcastStatus: "active",
-      part: ["id"],
-    });
-    let liveId = liveBroadcastsResponse.data.items?.[0]?.id;
-    if (!liveId) {
-      logger.info("No active live found. Attempting to create one…");
-      const newLiveId = await createLiveBroadcast();
+    const activeBroadcast = await fetchActiveBroadcast(youtubeClient);
+    const activeChatId = activeBroadcast?.snippet?.liveChatId;
+    if (activeChatId) return activeChatId;
 
-      if (!newLiveId) {
-        logger.error("Failed to create a new live broadcast.");
-        return;
-      }
-      liveId = newLiveId;
-      logger.info(
-        `Created new YouTube live broadcast: https://studio.youtube.com/video/${liveId}/livestreaming`
-      );
-    }
+    const upcomingBroadcast = await fetchUpcomingBroadcast(youtubeClient);
+    const upcomingChatId = upcomingBroadcast?.snippet?.liveChatId;
+    if (upcomingChatId) return upcomingChatId;
 
-    const videosResponse = await youtubeClient.videos.list({
-      id: [liveId],
-      part: ["liveStreamingDetails"],
-    });
-    const liveChatId =
-      videosResponse.data.items?.[0]?.liveStreamingDetails?.activeLiveChatId;
-    if (!liveChatId) {
-      logger.error("No active chat found for this video.");
+    logger.info("No live found. Attempting to create one…");
+    const newLiveBroadcast = await createLiveBroadcast(youtubeClient);
+    if (!newLiveBroadcast) {
+      logger.error("Failed to create a new live broadcast.");
       return;
     }
 
-    return liveChatId;
+    return newLiveBroadcast?.snippet?.liveChatId ?? undefined;
   } catch (error) {
     logger.error(`Error while retrieving YouTube chat ID: ${error}`);
   }
+};
+
+const fetchActiveBroadcast = async (youtubeClient: YoutubeClient) => {
+  const activeBroadcastsResponse = await youtubeClient.liveBroadcasts.list({
+    broadcastStatus: "active",
+    part: ["id", "snippet"],
+  });
+  return activeBroadcastsResponse.data.items?.[0];
+};
+
+const fetchUpcomingBroadcast = async (youtubeClient: YoutubeClient) => {
+  const upcomingBroadcastsResponse = await youtubeClient.liveBroadcasts.list({
+    broadcastStatus: "upcoming",
+    part: ["id", "snippet"],
+  });
+  const upcomingBroadcast = upcomingBroadcastsResponse.data.items?.filter(
+    (broadcast) => {
+      if (!broadcast.snippet?.publishedAt) return false;
+      return isToday(new Date(broadcast.snippet.publishedAt));
+    }
+  )?.[0];
+  return upcomingBroadcast;
+};
+
+const isToday = (date: Date) => {
+  const now = new Date();
+
+  return (
+    date.getDate() === now.getDate() &&
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear()
+  );
 };
