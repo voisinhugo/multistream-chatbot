@@ -15,8 +15,16 @@ export const initYouTube = async () => {
       version: "v3",
       auth: OAuth2Client,
     });
+    if (!youtubeClient) {
+      logger.error("Failed to initialize YouTube client.");
+      return;
+    }
 
     youtubeChatId = await getLiveChatId(youtubeClient);
+    if (!youtubeChatId) {
+      logger.error("Failed to retrieve YouTube live chat ID.");
+      return;
+    }
 
     logger.info("Connected to YouTube.");
   } catch (error) {
