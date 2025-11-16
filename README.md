@@ -29,6 +29,15 @@ export const twitchChannel = "#####";
 
 On [Google Cloud Console](https://console.cloud.google.com), create a new project and [enable the YouTube Data API v3](https://console.cloud.google.com/apis/library/youtube.googleapis.com). Create an [OAuth2 client](https://console.cloud.google.com/auth/clients) and add the secrets JSON file to `src/auth/client_secret.json`.
 
+#### Data to name a live
+
+Create a file `src/auth/googleSheetsSecrets.ts` with the following content:
+
+```ts
+export const GOOGLE_API_KEY = "##########"; // from Google Cloud Console
+export const SPREADSHEET_ID = "##########"; // from your Google Sheets URL
+```
+
 ## Run
 
 ```bash
